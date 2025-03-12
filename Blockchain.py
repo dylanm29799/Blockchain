@@ -61,6 +61,58 @@ class Blockchain:
             return False
         previous_block = block
         block_index +=1 
-    return True
+        return True
+
+
+#Part 2 - Mining the blockchain
+
+#Creating Web App
+app = Flask(__name__)
+
+#Creating blockchain
+blockchain = Blockchain()
+
+#Mining a new Block
+
+@app.route('/mineblock', methods = ['GET'])
+def mine_block(): 
+    previous_block = blockchain.get_prev_block()
+    previous_proof = previous_block['proof']
+    proof = blockchain.proof_of_work(previous_proof)
+    previous_hash = blockchain.hash(previous_block)
+    block = blockchain.create_block(proof, previous_hash)
+    res = {'message' : 'CONGRATS ON THE BLOCK!!!!',
+           'index' : block['index'], 
+           'timestamp' : block['timestamp'],
+           'proof' : block['proof'],
+           'previous_hash' : block['previous_hash']}
+    return jsonify(res, 200)
+
+#Getting the Full Blockchain
+
+@app.route('/get_chain', methods = ['GET'])
+def get_chain(): 
+    res = {'chain' : blockchain.chain,
+                'length' : len(blockchain.chain)}
+    return jsonify(res, 200)    
+
+#Running the app
+app.run(host= '0.0.0.0',
+        port = 5000)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         
